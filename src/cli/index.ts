@@ -79,6 +79,46 @@ program
     await runAgent('ship', task || 'ship current changes', opts)
   })
 
+// ─── /browse ────────────────────────────────────────────────────────────────
+program
+  .command('browse <task>')
+  .description('Browser automation — persistent Chromium daemon, ref-based, 100ms/cmd')
+  .option('-p, --project <path>', 'Project root', process.cwd())
+  .action(async (task, opts) => {
+    await runAgent('browse', task, opts)
+  })
+
+// ─── /browser ────────────────────────────────────────────────────────────────
+program
+  .command('browser <action>')
+  .description('Manage browser daemon — start | stop | status')
+  .action(async (action) => {
+    const { BrowserClient } = await import('../browser/client.js')
+    const client = new BrowserClient()
+
+    if (action === 'start') {
+      if (client.isDaemonRunning()) {
+        console.log(chalk.green('Browser daemon already running'))
+        return
+      }
+      const spinner = ora('Starting Chromium daemon...').start()
+      await client.startDaemon()
+      spinner.succeed(chalk.green('Browser daemon started'))
+
+    } else if (action === 'stop') {
+      await client.stopDaemon()
+      console.log(chalk.green('Browser daemon stopped'))
+
+    } else if (action === 'status') {
+      const running = client.isDaemonRunning()
+      console.log(running
+        ? chalk.green('Browser daemon: running')
+        : chalk.dim('Browser daemon: stopped'))
+    } else {
+      console.log(chalk.red(`Unknown action: ${action}. Use start | stop | status`))
+    }
+  })
+
 // ─── /ask ───────────────────────────────────────────────────────────────────
 program
   .command('ask <task>')

@@ -8,6 +8,7 @@ import { QAAgent } from '../agents/qa.js'
 import { CodeAgent } from '../agents/code.js'
 import { FixAgent } from '../agents/fix.js'
 import { ShipAgent } from '../agents/ship.js'
+import { BrowseAgent } from '../agents/browse.js'
 
 export interface OrchestratorConfig {
   projectRoot: string
@@ -32,6 +33,7 @@ const AGENT_REGISTRY: Record<string, () => BaseAgent> = {
   code: () => new CodeAgent(),
   fix: () => new FixAgent(),
   ship: () => new ShipAgent(),
+  browse: () => new BrowseAgent(),
 }
 
 export class NexusOrchestrator {
@@ -67,6 +69,7 @@ export class NexusOrchestrator {
       [/implement|build|create|add|code|write|generate/i, 'code', 0],
       [/fix|repair|patch|correct|resolve/i, 'fix', 0],
       [/ship|deploy|release|push|publish|commit/i, 'ship', 0],
+      [/browse|browser|click|navigate|web|url|screenshot|scrape/i, 'browse', 0],
     ]
 
     for (const [pattern, agentName, minRate] of rules) {
