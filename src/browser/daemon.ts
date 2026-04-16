@@ -38,13 +38,23 @@ function getOrCreateToken(): string {
 }
 
 // ── Browser lifecycle ────────────────────────────────────────────────────────
-const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+const CHROME_PATHS = [
+  // Chrome for Testing (downloaded by Playwright)
+  path.join(os.homedir(), '.nexus/browsers/chromium-1217/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
+  // System Chrome
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+]
+
+function findChrome(): string | undefined {
+  return CHROME_PATHS.find(p => fs.existsSync(p))
+}
 
 async function ensureBrowser() {
   if (!browser) {
+    const executablePath = findChrome()
     browser = await chromium.launch({
       headless: false,
-      executablePath: CHROME_PATH,
+      ...(executablePath ? { executablePath } : {}),
     })
     context = await browser.newContext()
     page = await context.newPage()
