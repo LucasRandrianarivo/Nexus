@@ -38,9 +38,14 @@ function getOrCreateToken(): string {
 }
 
 // ── Browser lifecycle ────────────────────────────────────────────────────────
+const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
 async function ensureBrowser() {
   if (!browser) {
-    browser = await chromium.launch({ headless: false })
+    browser = await chromium.launch({
+      headless: false,
+      executablePath: CHROME_PATH,
+    })
     context = await browser.newContext()
     page = await context.newPage()
 
