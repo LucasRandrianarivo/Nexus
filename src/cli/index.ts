@@ -52,6 +52,33 @@ program
     await runAgent('architect', task, opts)
   })
 
+// ─── /code ──────────────────────────────────────────────────────────────────
+program
+  .command('code <task>')
+  .description('Implement a feature — reads codebase patterns, writes production-ready code')
+  .option('-p, --project <path>', 'Project root', process.cwd())
+  .action(async (task, opts) => {
+    await runAgent('code', task, opts)
+  })
+
+// ─── /fix ───────────────────────────────────────────────────────────────────
+program
+  .command('fix [task]')
+  .description('Auto-fix findings from last review — surgical, no collateral damage')
+  .option('-p, --project <path>', 'Project root', process.cwd())
+  .action(async (task, opts) => {
+    await runAgent('fix', task || 'fix', opts)
+  })
+
+// ─── /ship ──────────────────────────────────────────────────────────────────
+program
+  .command('ship [task]')
+  .description('Full ship: eval → commit → changelog → push → PR')
+  .option('-p, --project <path>', 'Project root', process.cwd())
+  .action(async (task, opts) => {
+    await runAgent('ship', task || 'ship current changes', opts)
+  })
+
 // ─── /ask ───────────────────────────────────────────────────────────────────
 program
   .command('ask <task>')

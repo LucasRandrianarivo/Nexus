@@ -5,6 +5,9 @@ import { ReviewAgent } from '../agents/review.js'
 import { SecurityAgent } from '../agents/security.js'
 import { ArchitectAgent } from '../agents/architect.js'
 import { QAAgent } from '../agents/qa.js'
+import { CodeAgent } from '../agents/code.js'
+import { FixAgent } from '../agents/fix.js'
+import { ShipAgent } from '../agents/ship.js'
 
 export interface OrchestratorConfig {
   projectRoot: string
@@ -26,6 +29,9 @@ const AGENT_REGISTRY: Record<string, () => BaseAgent> = {
   security: () => new SecurityAgent(),
   architect: () => new ArchitectAgent(),
   qa: () => new QAAgent(),
+  code: () => new CodeAgent(),
+  fix: () => new FixAgent(),
+  ship: () => new ShipAgent(),
 }
 
 export class NexusOrchestrator {
@@ -54,10 +60,13 @@ export class NexusOrchestrator {
     // Routing rules (learned over time via success rates)
     const rules: [RegExp, string, number][] = [
       // [pattern, agentName, minSuccessRate]
-      [/review|diff|pr|merge|code quality|bug/i, 'review', 0],
+      [/review|diff|pr|merge|code quality/i, 'review', 0],
       [/security|vulnerability|auth|injection|exploit|cve|attack/i, 'security', 0],
-      [/plan|architect|design|how to build|implement|feature/i, 'architect', 0],
+      [/plan|architect|design|how to build/i, 'architect', 0],
       [/test|qa|coverage|edge case|regression/i, 'qa', 0],
+      [/implement|build|create|add|code|write|generate/i, 'code', 0],
+      [/fix|repair|patch|correct|resolve/i, 'fix', 0],
+      [/ship|deploy|release|push|publish|commit/i, 'ship', 0],
     ]
 
     for (const [pattern, agentName, minRate] of rules) {
