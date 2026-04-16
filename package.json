@@ -1,0 +1,30 @@
+{
+  "name": "nexus",
+  "version": "0.1.0",
+  "description": "A stateful multi-agent engineering OS — built to surpass gstack",
+  "type": "module",
+  "bin": {
+    "nexus": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --watch --loader ts-node/esm src/cli/index.ts",
+    "start": "node dist/cli/index.ts",
+    "nexus": "node --loader ts-node/esm src/cli/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.51.0",
+    "better-sqlite3": "^11.0.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "ora": "^8.0.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,75 @@
+#!/bin/bash
+set -e
+
+BOLD='\033[1m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+DIM='\033[2m'
+RESET='\033[0m'
+
+echo ""
+echo -e "${BOLD}NEXUS — Setup${RESET}"
+echo -e "${DIM}─────────────────────────────────${RESET}"
+
+# Check node
+if ! command -v node &> /dev/null; then
+  echo "Error: Node.js not found. Install from https://nodejs.org"
+  exit 1
+fi
+
+NODE_VER=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
+if [ "$NODE_VER" -lt 18 ]; then
+  echo "Error: Node.js 18+ required (found v$NODE_VER)"
+  exit 1
+fi
+
+echo -e "${GREEN}✓${RESET} Node.js $(node --version)"
+
+# Install dependencies
+echo -e "${DIM}Installing dependencies...${RESET}"
+npm install --silent
+
+# Build
+echo -e "${DIM}Building...${RESET}"
+npx tsc
+
+# Link globally
+npm link --silent
+echo -e "${GREEN}✓${RESET} nexus command linked globally"
+
+# Create config dir
+mkdir -p ~/.nexus
+
+# Setup API key
+if [ -z "$ANTHROPIC_API_KEY" ]; then
+  if [ -f ~/.nexus/.env ]; then
+    echo -e "${GREEN}✓${RESET} Found existing ~/.nexus/.env"
+  else
+    echo ""
+    echo -e "${CYAN}Enter your Anthropic API key (sk-ant-...):${RESET}"
+    read -r API_KEY
+    if [ -n "$API_KEY" ]; then
+      echo "ANTHROPIC_API_KEY=$API_KEY" > ~/.nexus/.env
+      echo "NEXUS_MODEL=claude-sonnet-4-6" >> ~/.nexus/.env
+      echo "NEXUS_FAST_MODEL=claude-haiku-4-5-20251001" >> ~/.nexus/.env
+      echo -e "${GREEN}✓${RESET} Saved to ~/.nexus/.env"
+    else
+      echo -e "${DIM}Skipped. Set ANTHROPIC_API_KEY manually before using nexus.${RESET}"
+    fi
+  fi
+else
+  echo -e "${GREEN}✓${RESET} ANTHROPIC_API_KEY already set in environment"
+fi
+
+echo ""
+echo -e "${BOLD}Setup complete.${RESET}"
+echo ""
+echo -e "Usage:"
+echo -e "  ${CYAN}nexus agents${RESET}              — list available agents"
+echo -e "  ${CYAN}nexus index -p /your/project${RESET} — index a project"
+echo -e "  ${CYAN}nexus review -p /your/project${RESET} — paranoid code review"
+echo -e "  ${CYAN}nexus security -p /your/project${RESET} — security scan"
+echo -e "  ${CYAN}nexus architect \"build X\" -p /your/project${RESET} — plan before coding"
+echo -e "  ${CYAN}nexus qa -p /your/project${RESET} — test coverage analysis"
+echo -e "  ${CYAN}nexus eval -p /your/project${RESET} — objective eval (no LLM bias)"
+echo ""
